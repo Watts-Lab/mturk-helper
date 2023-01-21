@@ -1,0 +1,37 @@
+{
+  "name": "mturk-helper",
+  "version": "1.0.0",
+  "description": "Package for supporting recruitment and payment of participants in multiplayer experiments",
+  "main": "rollup.config.js",
+  "scripts": {
+    "start": "node public/js/app.js",
+    "watch": "npx tsc --project tsconfig.dev.json --watch",
+    "dev": "run-p watch start",
+    "compile": "npx tsc --project tsconfig.prod.json",
+    "clean": "npx rimraf public/js/**/*",
+    "build": "run-s clean compile",
+    "test": "npx jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yiwei-ellen/mturk-helper.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yiwei-ellen/mturk-helper/issues"
+  },
+  "homepage": "https://github.com/yiwei-ellen/mturk-helper#readme",
+  "devDependencies": {
+    "@types/jest": "^29.2.6",
+    "browser-sync": "^2.27.11",
+    "jest": "^29.3.1",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^4.1.1",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1299.0",
+    "express": "^4.18.2"
+  }
+}

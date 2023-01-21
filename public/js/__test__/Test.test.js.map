@@ -1,0 +1,1 @@
+{"version":3,"file":"Test.test.js","sourceRoot":"","sources":["../../../src/ts/__test__/Test.test.ts"],"names":[],"mappings":";AAAA,IAAI,CAAC,kBAAkB,EAAE,GAAG,EAAE;IAC1B,MAAM,CAAC,GAAG,IAAI,CAAA;IACd,MAAM,CAAC,CAAC,CAAC,CAAC,OAAO,CAAC,IAAI,CAAC,CAAA;AAC3B,CAAC,CAAC,CAAA","sourcesContent":["test(\"this is test tes\", () => {\n    const a = true\n    expect(a).toEqual(true)\n})"]}
