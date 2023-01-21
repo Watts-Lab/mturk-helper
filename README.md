@@ -2,9 +2,9 @@
 Package for supporting recruitment and payment of participants in multiplayer experiments
 ### scripts
 `npm run dev`
-* this allows seeing the effect of local changes to files in /public folder
+* this allows seeing the effect of local changes to files in /public folder\
 `npm run build`
-* this cleans all js files in the /public folder and compiles from TS, source maps excluded
+* this cleans all js files in the /public folder and compiles from TS, source maps excluded\
 `npm run test`
 * this runs tests in src/_test_
 ### setup
