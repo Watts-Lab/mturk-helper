@@ -1,5 +1,6 @@
 # mturk-helper
 Package for supporting recruitment and payment of participants in multiplayer experiments
+
 ### scripts
 `code` node --experimental-json-modules public/js/app.js
 * this runs the program, note the --experimental... enables node to detect config.json file
@@ -7,6 +8,7 @@ Package for supporting recruitment and payment of participants in multiplayer ex
 * this cleans all js files in the /public folder and compiles from TS, source maps excluded
 `code` npm run test
 * this runs tests in src/_test_
+
 ### setup
 1. install editorconfig as an extension in VSCode
 2. the .editorconfig file sets the formats for coding
