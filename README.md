@@ -3,9 +3,11 @@ Package for supporting recruitment and payment of participants in multiplayer ex
 
 ### scripts
 `node --experimental-json-modules public/js/app.js`
-* this runs the program, note the --experimental... enables node to detect config.json file
+* this runs the program, note the --experimental... enables node to detect config.json file\\
+
 ` npm run build`
-* this cleans all js files in the /public folder and compiles from TS, source maps excluded
+* this cleans all js files in the /public folder and compiles from TS, source maps excluded\\
+
 `npm run test`
 * this runs tests in src/_test_
 
