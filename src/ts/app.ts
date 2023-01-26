@@ -1,47 +1,95 @@
-//Setting up AWS. Docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MTurk.html
-const config = require('./config.json');
-import AWS from 'aws-sdk';
-const region = "us-east-1";
-//const aws_access_key_id = config;
-//const aws_secret_access_key = process.env.YOUR_SECRET_KEY;
-AWS.config.update ({
-  accessKeyId: config.access_key,
-  secretAccessKey: config.secret_key,
-  region: region,
-  sslEnabled: true,
-});
-const sandbox = true; // WARNING Setting this to false could costs you money!
-const endpoint = `https://${
-  sandbox ? "mturk-requester-sandbox" : "mturk-requester"
-}.${region}.amazonaws.com`;
-const mturk = new AWS.MTurk({ endpoint: endpoint });
+/** @format */
+import * as mturk from "./mturk.js" ;
+import { readFile } from "fs/promises";
+//import { json, urlencoded } from "body-parser";
+import {parse} from "csv-parse";
+
+const pilot_date = "2023-01-17";
 
 
-//Create Local Server through express
-const express = require("express");
-const app = express();
-app.use(express.static("public"));
-const listener = app.listen(8080);
+const parseCSV = (csvData: string): Promise<[object]> => {
+    return new Promise((resolve, reject) => {
+      parse(csvData, { columns: true }, (err, JSONData) => {
+        if (err) reject(err);
+        resolve(JSONData);
+      });
+    });
+  };
 
-console.log("haihai");
+async function main() {
+  try {
+    console.log(await mturk.getAccountBalance());
+    let params = {
+        AssignmentDurationInSeconds: 60 * 30,
+        Description: "STRING_VALUE",
+        LifetimeInSeconds: 60 * 60,
+        Reward: "0.01", //this is how much the hit will pay out to a worker. We try to pay $15/hour.
+        Title: "Answer a quick question",
+        AutoApprovalDelayInSeconds: 60 * 60 * 2,
+        Keywords: "question, answer, research, etc",
+        MaxAssignments: 10,
+        QualificationRequirements: [], // add 'qualification' in the brackets to enable it.
+        Question: `
+          <ExternalQuestion xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2006-07-14/ExternalQuestion.xsd">
+            <ExternalURL>https://${process.env.PROJECT_DOMAIN}.glitch.me</ExternalURL>
+            <FrameHeight>400</FrameHeight>
+          </ExternalQuestion>
+        `,
+      };
+    console.log(await mturk.createHIT(params));
+    console.log(await mturk.listHITs());
+    // const bonus_worker_list = await readFile("payments_01_17.csv")
+    //   .then((buffer) => buffer.toString())
+    //   .then(parseCSV);
 
-//getter command
-//List HITs (currently running, expired, done, etc)
-/**
- * Returns a list of HITs and their status associated with the current account
- *
- * @param x - The first input number
- * @param y - The second input number
- * @returns The arithmetic mean of `x` and `y`
- *
-*/
-mturk.listHITs({}, (err: any, data:any) => {
-    if (err) console.log(err, err.stack);
-    else
-      console.log(
-        "Active HITs: \n",
-        data.HITs.filter((h:any) => h.HITStatus == "Assignable" || h.HITStatus == "Unassignable")
-      ); //not sure if leaving err and data types as any are the best practices
-      console.log("\nfinished listing.");
-  });
-console.log("hai");
+    // Bonus each worker in bonus_workers the amount in the bonus column
+    // bonus_worker_list.forEach((individual, index) =>
+    //   setTimeout(() => {
+    //     bonusWorker(
+    //       individual.WorkerId,
+    //       individual.assignment_id,
+    //       individual.bonus,
+    //       `${individual.WorkerId} ${pilot_date} pilot`,
+    //       `Bonus for games on ${pilot_date}`
+    //     );
+    //   }, index * 100)
+    // );
+
+
+
+
+
+
+    // Expects a CSV with format: WorkerID,Subject,MessageText
+    // const notify_worker_list = await readFile("---.csv")
+    //   .then((buffer) => buffer.toString())
+    //   .then(parseCSV);
+
+    // // Used slice to manage who to notify, but we can do this from the used file instead.
+    // notify_worker_list.forEach((individual, index) =>
+    //   setTimeout(() => {
+    //     notifyWorkers(
+    //       [individual.WorkerId], // notify expects a list of workers.
+    //       individual.Subject,
+    //       individual.MessageText
+    //     )
+    //       .then((response) =>
+    //         response.NotifyWorkersFailureStatuses.forEach((worker_response) =>
+    //           console.log(
+    //             `${worker_response.WorkerId},"${
+    //               worker_response.NotifyWorkersFailureCode
+    //             }","${worker_response.NotifyWorkersFailureMessage}",${Date()}`
+    //           )
+    //         )
+    //       )
+    //       .catch((err) =>
+    //         console.log(`${individual.WorkerId},${err.TurkErrorCode}`)
+    //       );
+    //   }, index * 100)
+    // );
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+main();
