@@ -1,16 +1,7 @@
 /** @format */
-let mturk = require("./mturk");
+import * as mturk from "./mturk.js" ;
 import { readFile } from "fs/promises";
-//import parse = require("csv-parse");
 //import { json, urlencoded } from "body-parser";
-import {
-  associateQualificationWithWorker,
-  bonusWorker,
-  notifyAllWorkers,
-  notifyWorkers,
-  listHITs,
-} from "./mturk";
-// import { notifyWorkers } from "./mturk_async";
 import {parse} from "csv-parse";
 
 const pilot_date = "2023-01-17";
@@ -28,9 +19,25 @@ const parseCSV = (csvData: string): Promise<[object]> => {
 async function main() {
   try {
     console.log(await mturk.getAccountBalance());
-
-
-
+    let params = {
+        AssignmentDurationInSeconds: 60 * 30,
+        Description: "STRING_VALUE",
+        LifetimeInSeconds: 60 * 60,
+        Reward: "0.01", //this is how much the hit will pay out to a worker. We try to pay $15/hour.
+        Title: "Answer a quick question",
+        AutoApprovalDelayInSeconds: 60 * 60 * 2,
+        Keywords: "question, answer, research, etc",
+        MaxAssignments: 10,
+        QualificationRequirements: [], // add 'qualification' in the brackets to enable it.
+        Question: `
+          <ExternalQuestion xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2006-07-14/ExternalQuestion.xsd">
+            <ExternalURL>https://${process.env.PROJECT_DOMAIN}.glitch.me</ExternalURL>
+            <FrameHeight>400</FrameHeight>
+          </ExternalQuestion>
+        `,
+      };
+    console.log(await mturk.createHIT(params));
+    console.log(await mturk.listHITs());
     // const bonus_worker_list = await readFile("payments_01_17.csv")
     //   .then((buffer) => buffer.toString())
     //   .then(parseCSV);

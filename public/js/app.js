@@ -1,6 +1,6 @@
 /** @format */
-let mturk = require("./mturk");
-// import { notifyWorkers } from "./mturk_async";
+import * as mturk from "./mturk.js";
+//import { json, urlencoded } from "body-parser";
 import { parse } from "csv-parse";
 const pilot_date = "2023-01-17";
 const parseCSV = (csvData) => {
@@ -15,6 +15,25 @@ const parseCSV = (csvData) => {
 async function main() {
     try {
         console.log(await mturk.getAccountBalance());
+        let params = {
+            AssignmentDurationInSeconds: 60 * 30,
+            Description: "STRING_VALUE",
+            LifetimeInSeconds: 60 * 60,
+            Reward: "0.01",
+            Title: "Answer a quick question",
+            AutoApprovalDelayInSeconds: 60 * 60 * 2,
+            Keywords: "question, answer, research, etc",
+            MaxAssignments: 10,
+            QualificationRequirements: [],
+            Question: `
+          <ExternalQuestion xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2006-07-14/ExternalQuestion.xsd">
+            <ExternalURL>https://${process.env.PROJECT_DOMAIN}.glitch.me</ExternalURL>
+            <FrameHeight>400</FrameHeight>
+          </ExternalQuestion>
+        `,
+        };
+        //console.log(await mturk.createHIT(params));
+        console.log(await mturk.listHITs());
         // const bonus_worker_list = await readFile("payments_01_17.csv")
         //   .then((buffer) => buffer.toString())
         //   .then(parseCSV);

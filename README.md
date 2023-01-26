@@ -1,8 +1,8 @@
 # mturk-helper
 Package for supporting recruitment and payment of participants in multiplayer experiments
 ### scripts
-`code` npm run dev
-* this allows seeing the effect of local changes to files in /public folder
+`code` node --experimental-json-modules public/js/app.js
+* this runs the program, note the --experimental... enables node to detect config.json file
 `code` npm run build
 * this cleans all js files in the /public folder and compiles from TS, source maps excluded
 `code` npm run test

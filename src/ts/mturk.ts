@@ -18,11 +18,12 @@ import {
   } from "@aws-sdk/client-mturk";
 
 
-  const config = require('./config');
+  import config from './config.json' assert {type:"json"};
   const region =  "us-east-1";
   const sandbox = config.sandbox; // WARNING Setting this to false could costs you money!
   const endpoint = `https://${sandbox ? "mturk-requester-sandbox" : "mturk-requester"}.${region}.amazonaws.com`;
 
+  //console.log(config.accessKeyId);
   const MTurk = new MTurkClient({
     region : "us-east-1",
     credentials: {
