@@ -10,10 +10,11 @@ Package for supporting recruitment and payment of participants in multiplayer ex
 ### setup
 1. install editorconfig as an extension in VSCode
 2. the .editorconfig file sets the formats for coding
-3. create a config.json under public/js folder and fill in the content as follows
+3. create a config.json under public/js folder and src/ts and fill in the content as follows
 ```
 {
-    "access_key": "YOUR_AWS_ACCESS_KEY",
-    "secret_key": "YOUR_AWS_SECRET_KEY"
+    "accessKeyID": "YOUR_AWS_ACCESS_KEY",
+    "secretAccessKey": "YOUR_AWS_SECRET_KEY",
+    "sandbox": [boolean value]
 }
 ```

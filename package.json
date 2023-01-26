@@ -31,7 +31,9 @@
     "typescript": "^4.9.4"
   },
   "dependencies": {
+    "@aws-sdk/client-mturk": "^3.258.0",
     "aws-sdk": "^2.1299.0",
+    "csv-parse": "^5.3.3",
     "express": "^4.18.2",
     "n": "^9.0.1",
     "stable": "^0.1.8"
