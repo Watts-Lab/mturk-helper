@@ -38,6 +38,9 @@ async function main() {
       };
     console.log(await mturk.createHIT(params));
     console.log(await mturk.listHITs());
+    console.log(await mturk.listWorkersWithQualificationType("xxxx"));//
+
+    
     // const bonus_worker_list = await readFile("payments_01_17.csv")
     //   .then((buffer) => buffer.toString())
     //   .then(parseCSV);
