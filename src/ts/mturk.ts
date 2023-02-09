@@ -2,6 +2,7 @@ import {
     SendBonusCommand,
     MTurkClient,
     GetAccountBalanceCommand,
+    ListBonusPaymentsCommand,
     ListHITsCommand,
     ListQualificationTypesCommand,
     ListWorkersWithQualificationTypeCommand,
@@ -53,6 +54,7 @@ import {
     );
   }
 
+  //i think we need to add a date time string to RequesterAnnotation
   export async function createHIT(params: CreateHITCommandInput) {
     return await MTurk.send(new CreateHITCommand(params));
   }
@@ -243,6 +245,51 @@ import {
       })
     );
   }
+//______________________________IMPLEMENT !!!__________-
+//function
+export function getWorkerAssignments(
+    WorkerId: string
+){
+    return getLocalWorkerAssignments(WorkerId);
+}
+
+function getLocalWorkerAssignments(
+    WorkerID:String
+){
+    return;
+}
+//worker id FIX it
+  export async function ListBonusPayments(
+    WorkerId: string,
+    HITId: string, //optional
+    Reason: string
+  ) {
+    console.log(WorkerId);
+
+    return await MTurk.send(
+      new ListBonusPaymentsCommand({
+        HITId: HITId,
+      })
+    );
+  }
+
+//implement you own version
+export function getWorkerQualifications(
+    WorkerID: "abababab",
+){
+    return getlocalWorkerQualifications(WorkerID);
+}
+
+function getlocalWorkerQualifications(
+    WorkerID:string
+){
+    //go through local json fill
+    return {Qualification:"ahahaha"}
+
+}
+
+
+
 
   export async function bonusWorker(
     WorkerId: string,

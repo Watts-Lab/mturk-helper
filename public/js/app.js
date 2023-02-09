@@ -27,7 +27,7 @@ async function main() {
             QualificationRequirements: [],
             Question: `
           <ExternalQuestion xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2006-07-14/ExternalQuestion.xsd">
-            <ExternalURL>https://${process.env.PROJECT_DOMAIN}.glitch.me</ExternalURL>
+            <ExternalURL>https://watts-lab.github.io/deliberation-portal/participate</ExternalURL>
             <FrameHeight>400</FrameHeight>
           </ExternalQuestion>
         `,

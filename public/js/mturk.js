@@ -1,4 +1,4 @@
-import { SendBonusCommand, MTurkClient, GetAccountBalanceCommand, ListHITsCommand, ListQualificationTypesCommand, ListWorkersWithQualificationTypeCommand, AssociateQualificationWithWorkerCommand, DisassociateQualificationFromWorkerCommand, CreateHITCommand, NotifyWorkersCommand, CreateQualificationTypeCommand, GetHITCommand, CreateAdditionalAssignmentsForHITCommand, ListAssignmentsForHITCommand, } from "@aws-sdk/client-mturk";
+import { SendBonusCommand, MTurkClient, GetAccountBalanceCommand, ListBonusPaymentsCommand, ListHITsCommand, ListQualificationTypesCommand, ListWorkersWithQualificationTypeCommand, AssociateQualificationWithWorkerCommand, DisassociateQualificationFromWorkerCommand, CreateHITCommand, NotifyWorkersCommand, CreateQualificationTypeCommand, GetHITCommand, CreateAdditionalAssignmentsForHITCommand, ListAssignmentsForHITCommand, } from "@aws-sdk/client-mturk";
 import config from './config.json' assert { type: "json" };
 const region = "us-east-1";
 const sandbox = config.sandbox; // WARNING Setting this to false could costs you money!
@@ -24,6 +24,7 @@ export async function getHIT(HITId) {
         HITId: HITId,
     }));
 }
+//i think we need to add a date time string to RequesterAnnotation
 export async function createHIT(params) {
     return await MTurk.send(new CreateHITCommand(params));
 }
@@ -135,6 +136,30 @@ export async function disassociateQualificationWithWorker(QualificationTypeId, W
         WorkerId: WorkerId,
         Reason: Reason,
     }));
+}
+//______________________________IMPLEMENT !!!__________-
+//function
+export function getWorkerAssignments(WorkerId) {
+    return getLocalWorkerAssignments(WorkerId);
+}
+function getLocalWorkerAssignments(WorkerID) {
+    return;
+}
+//worker id FIX it
+export async function ListBonusPayments(WorkerId, HITId, //optional
+Reason) {
+    console.log(WorkerId);
+    return await MTurk.send(new ListBonusPaymentsCommand({
+        HITId: HITId,
+    }));
+}
+//implement you own version
+export function getWorkerQualifications(WorkerID) {
+    return getlocalWorkerQualifications(WorkerID);
+}
+function getlocalWorkerQualifications(WorkerID) {
+    //go through local json fill
+    return { Qualification: "ahahaha" };
 }
 export async function bonusWorker(WorkerId, AssignmentId, BonusAmount, UniqueRequestToken, Reason = "") {
     return await MTurk.send(new SendBonusCommand({
