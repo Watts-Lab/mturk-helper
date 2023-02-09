@@ -31,13 +31,16 @@ async function main() {
         QualificationRequirements: [], // add 'qualification' in the brackets to enable it.
         Question: `
           <ExternalQuestion xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2006-07-14/ExternalQuestion.xsd">
-            <ExternalURL>https://${process.env.PROJECT_DOMAIN}.glitch.me</ExternalURL>
+            <ExternalURL>https://watts-lab.github.io/deliberation-portal/participate</ExternalURL>
             <FrameHeight>400</FrameHeight>
           </ExternalQuestion>
         `,
       };
     console.log(await mturk.createHIT(params));
     console.log(await mturk.listHITs());
+    console.log(await mturk.listWorkersWithQualificationType("xxxx"));//
+
+
     // const bonus_worker_list = await readFile("payments_01_17.csv")
     //   .then((buffer) => buffer.toString())
     //   .then(parseCSV);

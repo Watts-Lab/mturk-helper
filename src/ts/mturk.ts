@@ -2,6 +2,7 @@ import {
     SendBonusCommand,
     MTurkClient,
     GetAccountBalanceCommand,
+    ListBonusPaymentsCommand,
     ListHITsCommand,
     ListQualificationTypesCommand,
     ListWorkersWithQualificationTypeCommand,
@@ -15,6 +16,8 @@ import {
     GetHITCommand,
     CreateAdditionalAssignmentsForHITCommand,
     ListAssignmentsForHITCommand,
+    Qualification,
+    QualificationType,
   } from "@aws-sdk/client-mturk";
 
 
@@ -27,7 +30,7 @@ import {
   const MTurk = new MTurkClient({
     region : "us-east-1",
     credentials: {
-      accessKeyId: config.accessKeyId,
+      accessKeyId: config.accessKeyID,
       secretAccessKey: config.secretAccessKey,
     },
     endpoint: endpoint,
@@ -51,8 +54,15 @@ import {
     );
   }
 
+  //i think we need to add a date time string to RequesterAnnotation
   export async function createHIT(params: CreateHITCommandInput) {
-    return await MTurk.send(new CreateHITCommand(params));
+    try{
+    const x =  await MTurk.send(new CreateHITCommand(params));
+    return x;
+    } catch(error){
+        console.log(error);
+    }
+
   }
 
   export async function createAdditionalAssignmentsForHIT(
@@ -67,19 +77,19 @@ import {
     );
   }
 
-//   export async function listAssignmentsForHIT(
-//     HITId: string,
-//     MaxResults = 100,
-//     NextToken = null
-//   ) {
-//     return await MTurk.send(
-//       new ListAssignmentsForHITCommand({
-//         HITId,
-//         MaxResults,
-//         NextToken,
-//       })
-//     );
-//   }
+  export async function listAssignmentsForHIT(
+    HITId: string,
+    MaxResults = 100,
+    NextToken : string | undefined
+  ) {
+    return await MTurk.send(
+      new ListAssignmentsForHITCommand({
+        HITId,
+        MaxResults,
+        NextToken,
+      })
+    );
+  }
 
 
 
@@ -122,31 +132,32 @@ import {
   /**  QUALIFICATIONS **/
 
   /* Qualification Type Querying*/
-//   export async function listQualificationTypes(
-//     query: string,
-//     MustBeOwnedByCaller = true,
-//     MustBeRequestable = false,
-//     MaxResults = 100
-//   ) {
-//     let numResults = MaxResults;
-//     let nextToken = null;
-//     let response = [];
-//     while (numResults == MaxResults) {
-//       const result = await MTurk.send(
-//         new ListQualificationTypesCommand({
-//           Query: query,
-//           MustBeOwnedByCaller: MustBeOwnedByCaller,
-//           MustBeRequestable: MustBeRequestable,
-//           MaxResults: MaxResults,
-//           NextToken: nextToken,
-//         })
-//       );
-//       nextToken = result.NextToken;
-//       numResults = result.NumResults;
-//       response = response.concat(result.QualificationTypes);
-//     }
-//     return response;
-//   }
+  export async function listQualificationTypes(
+    query: string,
+    MustBeOwnedByCaller = true,
+    MustBeRequestable = false,
+    MaxResults = 100
+  ) {
+    let numResults : number | undefined;
+    let nextToken : string | undefined;
+    let response : QualificationType[] = [];
+    while (numResults == MaxResults) {
+      const result = await MTurk.send(
+        new ListQualificationTypesCommand({
+          Query: query,
+          MustBeOwnedByCaller: MustBeOwnedByCaller,
+          MustBeRequestable: MustBeRequestable,
+          MaxResults: MaxResults,
+          NextToken: nextToken,
+        })
+      );
+      nextToken = result.NextToken;
+      numResults = result.NumResults;
+      let something = response.concat(result.QualificationTypes ? result.QualificationTypes:[] )
+      response = something;
+    }
+    return response;
+  }
 
   /* Qualification Creation, Deletion, Listing */
   export async function listAllOwnedQualificationTypes(
@@ -166,27 +177,30 @@ import {
     return result.QualificationTypes;
   }
 
-//   export async function listWorkersWithQualificationType(
-//     QualificationTypeId: string,
-//     MaxResults = 100
-//   ) {
-//     let numResults = MaxResults;
-//     let nextToken = null;
-//     let response = [];
-//     while (numResults == MaxResults) {
-//       const result = await MTurk.send(
-//         new ListWorkersWithQualificationTypeCommand({
-//           QualificationTypeId: QualificationTypeId,
-//           MaxResults: MaxResults,
-//           NextToken: nextToken,
-//         })
-//       );
-//       nextToken = result.NextToken;
-//       numResults = result.NumResults;
-//       response = response.concat(result.Qualifications);
-//     }
-//     return response;
-//   }
+  export async function listWorkersWithQualificationType(
+    QualificationTypeId: string,
+    MaxResults = 100
+  ) {
+    let numResults : number | undefined;
+    let nextToken : string | undefined;
+    //let returnedArray: [];
+    let response : Qualification[];
+    response = [];
+    while (numResults == MaxResults) {
+      const result = await MTurk.send(
+        new ListWorkersWithQualificationTypeCommand({
+          QualificationTypeId: QualificationTypeId,
+          MaxResults: MaxResults,
+          NextToken: nextToken //not sure what a pagination token is
+        })
+      );
+      nextToken = result.NextToken;
+      numResults = result.NumResults;
+      let something = response.concat(result.Qualifications ? result.Qualifications:[] )
+      response = something;
+    }
+    return response;
+  }
 
   export async function createQualificationType(
     Name: string,
@@ -237,6 +251,51 @@ import {
       })
     );
   }
+//______________________________IMPLEMENT !!!__________-
+//function
+export function getWorkerAssignments(
+    WorkerId: string
+){
+    return getLocalWorkerAssignments(WorkerId);
+}
+
+function getLocalWorkerAssignments(
+    WorkerID:String
+){
+    return;
+}
+//worker id FIX it
+  export async function ListBonusPayments(
+    WorkerId: string,
+    HITId: string, //optional
+    Reason: string
+  ) {
+    console.log(WorkerId);
+
+    return await MTurk.send(
+      new ListBonusPaymentsCommand({
+        HITId: HITId,
+      })
+    );
+  }
+
+//implement you own version
+export function getWorkerQualifications(
+    WorkerID: "abababab",
+){
+    return getlocalWorkerQualifications(WorkerID);
+}
+
+function getlocalWorkerQualifications(
+    WorkerID:string
+){
+    //go through local json fill
+    return {Qualification:"ahahaha"}
+
+}
+
+
+
 
   export async function bonusWorker(
     WorkerId: string,

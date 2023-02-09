@@ -4,7 +4,7 @@
   "description": "Package for supporting recruitment and payment of participants in multiplayer experiments",
   "main": "rollup.config.js",
   "scripts": {
-    "start": "node public/js/app.js",
+    "start": "node --experimental-json-modules public/js/app.js",
     "watch": "npx tsc --project tsconfig.dev.json --watch",
     "dev": "run-p watch start",
     "compile": "npx tsc --project tsconfig.prod.json",

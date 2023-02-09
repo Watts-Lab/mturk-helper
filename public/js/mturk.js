@@ -1,4 +1,4 @@
-import { SendBonusCommand, MTurkClient, GetAccountBalanceCommand, ListHITsCommand, ListQualificationTypesCommand, AssociateQualificationWithWorkerCommand, DisassociateQualificationFromWorkerCommand, CreateHITCommand, NotifyWorkersCommand, CreateQualificationTypeCommand, GetHITCommand, CreateAdditionalAssignmentsForHITCommand, } from "@aws-sdk/client-mturk";
+import { SendBonusCommand, MTurkClient, GetAccountBalanceCommand, ListBonusPaymentsCommand, ListHITsCommand, ListQualificationTypesCommand, ListWorkersWithQualificationTypeCommand, AssociateQualificationWithWorkerCommand, DisassociateQualificationFromWorkerCommand, CreateHITCommand, NotifyWorkersCommand, CreateQualificationTypeCommand, GetHITCommand, CreateAdditionalAssignmentsForHITCommand, ListAssignmentsForHITCommand, } from "@aws-sdk/client-mturk";
 import config from './config.json' assert { type: "json" };
 const region = "us-east-1";
 const sandbox = config.sandbox; // WARNING Setting this to false could costs you money!
@@ -7,7 +7,7 @@ const endpoint = `https://${sandbox ? "mturk-requester-sandbox" : "mturk-request
 const MTurk = new MTurkClient({
     region: "us-east-1",
     credentials: {
-        accessKeyId: config.accessKeyId,
+        accessKeyId: config.accessKeyID,
         secretAccessKey: config.secretAccessKey,
     },
     endpoint: endpoint,
@@ -24,6 +24,7 @@ export async function getHIT(HITId) {
         HITId: HITId,
     }));
 }
+//i think we need to add a date time string to RequesterAnnotation
 export async function createHIT(params) {
     return await MTurk.send(new CreateHITCommand(params));
 }
@@ -33,19 +34,13 @@ export async function createAdditionalAssignmentsForHIT(HITId, NumberOfAdditiona
         NumberOfAdditionalAssignments,
     }));
 }
-//   export async function listAssignmentsForHIT(
-//     HITId: string,
-//     MaxResults = 100,
-//     NextToken = null
-//   ) {
-//     return await MTurk.send(
-//       new ListAssignmentsForHITCommand({
-//         HITId,
-//         MaxResults,
-//         NextToken,
-//       })
-//     );
-//   }
+export async function listAssignmentsForHIT(HITId, MaxResults = 100, NextToken) {
+    return await MTurk.send(new ListAssignmentsForHITCommand({
+        HITId,
+        MaxResults,
+        NextToken,
+    }));
+}
 export async function notifyWorkers(WorkerIds, Subject, MessageText) {
     return await MTurk.send(new NotifyWorkersCommand({
         WorkerIds: WorkerIds,
@@ -68,31 +63,25 @@ export async function notifyAllWorkers(WorkerIds, Subject, MessageText) {
 }
 /**  QUALIFICATIONS **/
 /* Qualification Type Querying*/
-//   export async function listQualificationTypes(
-//     query: string,
-//     MustBeOwnedByCaller = true,
-//     MustBeRequestable = false,
-//     MaxResults = 100
-//   ) {
-//     let numResults = MaxResults;
-//     let nextToken = null;
-//     let response = [];
-//     while (numResults == MaxResults) {
-//       const result = await MTurk.send(
-//         new ListQualificationTypesCommand({
-//           Query: query,
-//           MustBeOwnedByCaller: MustBeOwnedByCaller,
-//           MustBeRequestable: MustBeRequestable,
-//           MaxResults: MaxResults,
-//           NextToken: nextToken,
-//         })
-//       );
-//       nextToken = result.NextToken;
-//       numResults = result.NumResults;
-//       response = response.concat(result.QualificationTypes);
-//     }
-//     return response;
-//   }
+export async function listQualificationTypes(query, MustBeOwnedByCaller = true, MustBeRequestable = false, MaxResults = 100) {
+    let numResults;
+    let nextToken;
+    let response = [];
+    while (numResults == MaxResults) {
+        const result = await MTurk.send(new ListQualificationTypesCommand({
+            Query: query,
+            MustBeOwnedByCaller: MustBeOwnedByCaller,
+            MustBeRequestable: MustBeRequestable,
+            MaxResults: MaxResults,
+            NextToken: nextToken,
+        }));
+        nextToken = result.NextToken;
+        numResults = result.NumResults;
+        let something = response.concat(result.QualificationTypes ? result.QualificationTypes : []);
+        response = something;
+    }
+    return response;
+}
 /* Qualification Creation, Deletion, Listing */
 export async function listAllOwnedQualificationTypes(MustBeRequestable, MustBeOwnedByCaller = true, MaxResults = 100) {
     const result = await MTurk.send(new ListQualificationTypesCommand({
@@ -103,27 +92,25 @@ export async function listAllOwnedQualificationTypes(MustBeRequestable, MustBeOw
     console.log(result.QualificationTypes);
     return result.QualificationTypes;
 }
-//   export async function listWorkersWithQualificationType(
-//     QualificationTypeId: string,
-//     MaxResults = 100
-//   ) {
-//     let numResults = MaxResults;
-//     let nextToken = null;
-//     let response = [];
-//     while (numResults == MaxResults) {
-//       const result = await MTurk.send(
-//         new ListWorkersWithQualificationTypeCommand({
-//           QualificationTypeId: QualificationTypeId,
-//           MaxResults: MaxResults,
-//           NextToken: nextToken,
-//         })
-//       );
-//       nextToken = result.NextToken;
-//       numResults = result.NumResults;
-//       response = response.concat(result.Qualifications);
-//     }
-//     return response;
-//   }
+export async function listWorkersWithQualificationType(QualificationTypeId, MaxResults = 100) {
+    let numResults;
+    let nextToken;
+    //let returnedArray: [];
+    let response;
+    response = [];
+    while (numResults == MaxResults) {
+        const result = await MTurk.send(new ListWorkersWithQualificationTypeCommand({
+            QualificationTypeId: QualificationTypeId,
+            MaxResults: MaxResults,
+            NextToken: nextToken //not sure what a pagination token is
+        }));
+        nextToken = result.NextToken;
+        numResults = result.NumResults;
+        let something = response.concat(result.Qualifications ? result.Qualifications : []);
+        response = something;
+    }
+    return response;
+}
 export async function createQualificationType(Name, Description, Keywords, QualificationTypeStatus) {
     return await MTurk.send(new CreateQualificationTypeCommand({
         Name,
@@ -149,6 +136,30 @@ export async function disassociateQualificationWithWorker(QualificationTypeId, W
         WorkerId: WorkerId,
         Reason: Reason,
     }));
+}
+//______________________________IMPLEMENT !!!__________-
+//function
+export function getWorkerAssignments(WorkerId) {
+    return getLocalWorkerAssignments(WorkerId);
+}
+function getLocalWorkerAssignments(WorkerID) {
+    return;
+}
+//worker id FIX it
+export async function ListBonusPayments(WorkerId, HITId, //optional
+Reason) {
+    console.log(WorkerId);
+    return await MTurk.send(new ListBonusPaymentsCommand({
+        HITId: HITId,
+    }));
+}
+//implement you own version
+export function getWorkerQualifications(WorkerID) {
+    return getlocalWorkerQualifications(WorkerID);
+}
+function getlocalWorkerQualifications(WorkerID) {
+    //go through local json fill
+    return { Qualification: "ahahaha" };
 }
 export async function bonusWorker(WorkerId, AssignmentId, BonusAmount, UniqueRequestToken, Reason = "") {
     return await MTurk.send(new SendBonusCommand({
