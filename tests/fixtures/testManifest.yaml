@@ -1,0 +1,55 @@
+hitTemplates:
+  - name: surveyLink
+    title: Complete an academic survey (6 mins)
+    description: We are interested in your opinions about bagels
+    reward:
+      - amount: 1
+      - currencyCode: USD
+    keywords:
+      - survey
+      - research
+      - study
+    allowedTimeInMinutes: 5
+    visibleForMinutes: 90
+    autoApproveInMinutes: 30
+    question: surveyLinkFile.html
+    visibility: hidden
+
+  - name: empiricaRecruit
+    title: Qualify for a multiplayer game at ${launchDate}
+    reward:
+      - amount: 1
+      - currencyCode: USD
+    keywords:
+      - research
+      - study
+      - game
+      - multiplayer
+    question: empiricaRecruit.html
+
+sequences:
+  - name: simpleSurvey
+    desc: A single HIT that gives participants a long time to complete the task
+    steps:
+      - template: surveyLink
+        allowedTimeInMinutes: 60
+        nResponses: 9
+
+  - name: multiPlayerGame
+    desc: Coordinates 3 HITs to all be complete at "launchDate"
+    reward:
+      - amount: 2
+        currencyCode: 3
+    steps:
+      - template: empiricaRecruit
+        launchOffsetMinutes: -40
+        visibleForMinutes: 10
+        allowedTimeInMinutes: 30
+      - template: empiricaRecruit
+        launchOffsetMinutes: -30
+        visibleForMinutes: 10
+        allowedTimeInMinutes: 20
+      - template: empiricaRecruit
+        launchOffsetMinutes: -20
+        visibleForMinutes: 10
+        allowedTimeInMinutes: 10
