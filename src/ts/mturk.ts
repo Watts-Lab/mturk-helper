@@ -56,7 +56,13 @@ import {
 
   //i think we need to add a date time string to RequesterAnnotation
   export async function createHIT(params: CreateHITCommandInput) {
-    return await MTurk.send(new CreateHITCommand(params));
+    try{
+    const x =  await MTurk.send(new CreateHITCommand(params));
+    return x;
+    } catch(error){
+        console.log(error);
+    }
+
   }
 
   export async function createAdditionalAssignmentsForHIT(
