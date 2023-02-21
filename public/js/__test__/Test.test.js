@@ -1,3 +1,4 @@
+//import * as mturk from "../mturk.ts" ;
 import * as mturk from "../mturk.js";
 test("this is test tes", () => {
     const a = true;
@@ -22,7 +23,9 @@ test("it creates a HIT on MTURk", async () => {
         `,
     };
     const response = await mturk.createHIT(HITParams);
-    console.log(response)
-    //expect(response.status).toEqual(200);
-    //expect(response.data.HITId).toBeTruthy;
+    expect(response.HIT?.HITStatus).toEqual(200);
+    expect(response.HIT?.HITId).toBeTruthy;
 });
+test("it gets the status/info of a running HIT", async () => {
+});
+test("it f");

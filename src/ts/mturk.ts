@@ -42,8 +42,8 @@ import {
   }
 
   /** HITS **/
-  export async function listHITs() {
-    return await MTurk.send(new ListHITsCommand({}));
+  export async function listHITs():Promise<HITs[]>{
+    return await (await MTurk.send(new ListHITsCommand({}))).HITs||[];
   }
 
   export async function getHIT(HITId: string) {
