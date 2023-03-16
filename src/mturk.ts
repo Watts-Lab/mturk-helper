@@ -18,6 +18,7 @@ import {
     ListAssignmentsForHITCommand,
     Qualification,
     QualificationType,
+    HIT
   } from "@aws-sdk/client-mturk";
 
 
@@ -42,16 +43,16 @@ import {
   }
 
   /** HITS **/
-  export async function listHITs() {
-    return await MTurk.send(new ListHITsCommand({}));
+  export async function listHITs():Promise<HIT[]>{
+    return await (await MTurk.send(new ListHITsCommand({}))).HITs||[];
   }
 
   export async function getHIT(HITId: string) {
-    return await MTurk.send(
+    return await(await MTurk.send(
       new GetHITCommand({
         HITId: HITId,
       })
-    );
+    )).HIT;
   }
 
   //i think we need to add a date time string to RequesterAnnotation

@@ -1,4 +1,4 @@
-import { SendBonusCommand, MTurkClient, GetAccountBalanceCommand, ListBonusPaymentsCommand, ListHITsCommand, ListQualificationTypesCommand, ListWorkersWithQualificationTypeCommand, AssociateQualificationWithWorkerCommand, DisassociateQualificationFromWorkerCommand, CreateHITCommand, NotifyWorkersCommand, CreateQualificationTypeCommand, GetHITCommand, CreateAdditionalAssignmentsForHITCommand, ListAssignmentsForHITCommand, } from "@aws-sdk/client-mturk";
+import { SendBonusCommand, MTurkClient, GetAccountBalanceCommand, ListBonusPaymentsCommand, ListHITsCommand, ListQualificationTypesCommand, ListWorkersWithQualificationTypeCommand, AssociateQualificationWithWorkerCommand, DisassociateQualificationFromWorkerCommand, CreateHITCommand, NotifyWorkersCommand, CreateQualificationTypeCommand, GetHITCommand, CreateAdditionalAssignmentsForHITCommand, ListAssignmentsForHITCommand } from "@aws-sdk/client-mturk";
 import config from './config.json' assert { type: "json" };
 const region = "us-east-1";
 const sandbox = config.sandbox; // WARNING Setting this to false could costs you money!
@@ -17,16 +17,22 @@ export async function getAccountBalance() {
 }
 /** HITS **/
 export async function listHITs() {
-    return await MTurk.send(new ListHITsCommand({}));
+    return await (await MTurk.send(new ListHITsCommand({}))).HITs || [];
 }
 export async function getHIT(HITId) {
-    return await MTurk.send(new GetHITCommand({
+    return await (await MTurk.send(new GetHITCommand({
         HITId: HITId,
-    }));
+    }))).HIT;
 }
 //i think we need to add a date time string to RequesterAnnotation
 export async function createHIT(params) {
-    return await MTurk.send(new CreateHITCommand(params));
+    try {
+        const x = await MTurk.send(new CreateHITCommand(params));
+        return x;
+    }
+    catch (error) {
+        console.log(error);
+    }
 }
 export async function createAdditionalAssignmentsForHIT(HITId, NumberOfAdditionalAssignments) {
     return await MTurk.send(new CreateAdditionalAssignmentsForHITCommand({
