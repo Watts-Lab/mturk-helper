@@ -4,13 +4,10 @@
   "description": "Package for supporting recruitment and payment of participants in multiplayer experiments",
   "main": "rollup.config.js",
   "scripts": {
-    "start": "node --experimental-json-modules public/js/app.js",
-    "watch": "npx tsc --project tsconfig.dev.json --watch",
-    "dev": "run-p watch start",
-    "compile": "npx tsc --project tsconfig.prod.json",
-    "clean": "npx rimraf public/js/**/*",
-    "build": "run-s clean compile",
-    "test": "npx jest"
+    "start": "node --experimental-json-modules src/app.js",
+    "build": "tsc",
+    "test": "node --experimental-json-modules ./node_modules/mocha/bin/mocha ./test/turk.spec.js"
+     
   },
   "repository": {
     "type": "git",
@@ -23,12 +20,18 @@
   },
   "homepage": "https://github.com/yiwei-ellen/mturk-helper#readme",
   "devDependencies": {
-    "@types/jest": "^29.2.6",
+    "@babel/core": "^7.21.0",
+    "@babel/preset-env": "^7.20.2",
+    "@types/chai": "^4.3.4",
+    "@types/expect": "^24.3.0",
+    "@types/mocha": "^10.0.1",
     "browser-sync": "^2.27.11",
-    "jest": "^29.3.1",
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
     "npm-run-all": "^4.1.5",
     "rimraf": "^4.1.1",
-    "typescript": "^4.9.4"
+    "ts-mocha": "^10.0.0",
+    "typescript": "^4.9.5"
   },
   "dependencies": {
     "@aws-sdk/client-mturk": "^3.258.0",
@@ -38,5 +41,8 @@
     "n": "^9.0.1",
     "stable": "^0.1.8"
   },
-  "type": "module"
+  "type": "module",
+  "directories": {
+    "test": "test"
+  }
 }
