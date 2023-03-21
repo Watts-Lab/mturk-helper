@@ -26,7 +26,7 @@ export function getAccountBalance() {
         return (yield MTurk.send(new GetAccountBalanceCommand({}))).AvailableBalance;
     });
 }
-/** HITS **/
+/** tested **/
 export function listHITs() {
     return __awaiter(this, void 0, void 0, function* () {
         return (yield (yield MTurk.send(new ListHITsCommand({}))).HITs) || [];
@@ -51,6 +51,7 @@ export function createHIT(params) {
         }
     });
 }
+//not tested
 export function createAdditionalAssignmentsForHIT(HITId, NumberOfAdditionalAssignments) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield MTurk.send(new CreateAdditionalAssignmentsForHITCommand({
@@ -94,7 +95,8 @@ export function notifyAllWorkers(WorkerIds, Subject, MessageText) {
 }
 /**  QUALIFICATIONS **/
 /* Qualification Type Querying*/
-export function listQualificationTypes(query, MustBeOwnedByCaller = true, MustBeRequestable = false, MaxResults = 100) {
+//test
+export function listQualificationTypes(query, MustBeOwnedByCaller = true, MustBeRequestable = false, MaxResults) {
     return __awaiter(this, void 0, void 0, function* () {
         let numResults;
         let nextToken;
@@ -116,6 +118,7 @@ export function listQualificationTypes(query, MustBeOwnedByCaller = true, MustBe
     });
 }
 /* Qualification Creation, Deletion, Listing */
+//test
 export function listAllOwnedQualificationTypes(MustBeRequestable, MustBeOwnedByCaller = true, MaxResults = 100) {
     return __awaiter(this, void 0, void 0, function* () {
         const result = yield MTurk.send(new ListQualificationTypesCommand({
@@ -127,6 +130,7 @@ export function listAllOwnedQualificationTypes(MustBeRequestable, MustBeOwnedByC
         return result.QualificationTypes;
     });
 }
+//test
 export function listWorkersWithQualificationType(QualificationTypeId, MaxResults = 100) {
     return __awaiter(this, void 0, void 0, function* () {
         let numResults;
@@ -148,17 +152,14 @@ export function listWorkersWithQualificationType(QualificationTypeId, MaxResults
         return response;
     });
 }
-export function createQualificationType(Name, Description, Keywords, QualificationTypeStatus) {
+//test
+export function createQualificationType(params) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield MTurk.send(new CreateQualificationTypeCommand({
-            Name,
-            Description,
-            Keywords,
-            QualificationTypeStatus,
-        }));
+        return yield MTurk.send(new CreateQualificationTypeCommand(params));
     });
 }
 /* Qualification Interaction With Workers */
+//test -
 export function associateQualificationWithWorker(QualificationTypeId, WorkerId, IntegerValue = 0, SendNotification = false) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield MTurk.send(new AssociateQualificationWithWorkerCommand({
@@ -169,6 +170,7 @@ export function associateQualificationWithWorker(QualificationTypeId, WorkerId, 
         }));
     });
 }
+//test
 export function disassociateQualificationWithWorker(QualificationTypeId, WorkerId, Reason) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log(QualificationTypeId);

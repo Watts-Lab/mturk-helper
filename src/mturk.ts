@@ -13,11 +13,13 @@ import {
     NotifyWorkersCommandInput,
     CreateHITCommandInput,
     CreateQualificationTypeCommand,
+    CreateQualificationTypeCommandInput,
     GetHITCommand,
     CreateAdditionalAssignmentsForHITCommand,
     ListAssignmentsForHITCommand,
     Qualification,
     QualificationType,
+    ListQualificationTypesResponse,
     HIT
   } from "@aws-sdk/client-mturk";
 
@@ -42,7 +44,7 @@ import {
     return (await MTurk.send(new GetAccountBalanceCommand({}))).AvailableBalance;
   }
 
-  /** HITS **/
+  /** tested **/
   export async function listHITs():Promise<HIT[]>{
     return await (await MTurk.send(new ListHITsCommand({}))).HITs||[];
   }
@@ -66,6 +68,7 @@ import {
 
   }
 
+  //not tested
   export async function createAdditionalAssignmentsForHIT(
     HITId: string,
     NumberOfAdditionalAssignments: number
@@ -81,7 +84,7 @@ import {
   export async function listAssignmentsForHIT(
     HITId: string,
     MaxResults = 100,
-    NextToken : string | undefined
+    NextToken? : string
   ) {
     return await MTurk.send(
       new ListAssignmentsForHITCommand({
@@ -133,11 +136,12 @@ import {
   /**  QUALIFICATIONS **/
 
   /* Qualification Type Querying*/
+  //test
   export async function listQualificationTypes(
     query: string,
     MustBeOwnedByCaller = true,
     MustBeRequestable = false,
-    MaxResults = 100
+    MaxResults? : 100
   ) {
     let numResults : number | undefined;
     let nextToken : string | undefined;
@@ -161,6 +165,7 @@ import {
   }
 
   /* Qualification Creation, Deletion, Listing */
+  //test
   export async function listAllOwnedQualificationTypes(
     MustBeRequestable: boolean,
     MustBeOwnedByCaller = true,
@@ -178,6 +183,7 @@ import {
     return result.QualificationTypes;
   }
 
+  //test
   export async function listWorkersWithQualificationType(
     QualificationTypeId: string,
     MaxResults = 100
@@ -202,25 +208,17 @@ import {
     }
     return response;
   }
-
+//test
   export async function createQualificationType(
-    Name: string,
-    Description: string,
-    Keywords: string,
-    QualificationTypeStatus: string
+    params: CreateQualificationTypeCommandInput
   ) {
     return await MTurk.send(
-      new CreateQualificationTypeCommand({
-        Name,
-        Description,
-        Keywords,
-        QualificationTypeStatus,
-      })
+      new CreateQualificationTypeCommand(params)
     );
   }
 
   /* Qualification Interaction With Workers */
-
+  //test -
   export async function associateQualificationWithWorker(
     QualificationTypeId: string,
     WorkerId: string,
@@ -236,7 +234,7 @@ import {
       })
     );
   }
-
+//test
   export async function disassociateQualificationWithWorker(
     QualificationTypeId: string,
     WorkerId: string,
