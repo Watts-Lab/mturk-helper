@@ -186,7 +186,7 @@ import {
   //test
   export async function listWorkersWithQualificationType(
     QualificationTypeId: string,
-    MaxResults = 100
+    MaxResults? : 100
   ) {
     let numResults : number | undefined;
     let nextToken : string | undefined;
@@ -293,17 +293,14 @@ function getlocalWorkerQualifications(
 
 }
 
-
-
-
-  export async function bonusWorker(
+export async function bonusWorker(
     WorkerId: string,
     AssignmentId: string,
     BonusAmount: string | number,
     UniqueRequestToken: string,
     Reason: string = ""
   ) {
-    return await MTurk.send(
+    const response = await MTurk.send(
       new SendBonusCommand({
         WorkerId: WorkerId,
         AssignmentId: AssignmentId,
@@ -311,16 +308,43 @@ function getlocalWorkerQualifications(
         Reason: Reason,
         UniqueRequestToken: UniqueRequestToken,
       })
-    )
-      .then((response) =>
-        console.log(
-          `Sent $${String(
-            Number(BonusAmount).toFixed(2)
-          )} bonus to ${WorkerId} for ${UniqueRequestToken}`
-        )
-      )
-      .catch((err) => {
-        if (!err.message.includes("has already been processed"))
-          console.log(err.message);
-      });
+    );
+
+    const message = `Sent $${String(
+      Number(BonusAmount).toFixed(2)
+    )} bonus to ${WorkerId} for ${UniqueRequestToken}`;
+
+    console.log(message);
+    return {response, message};
   }
+
+
+//   export async function bonusWorker(
+//     WorkerId: string,
+//     AssignmentId: string,
+//     BonusAmount: string | number,
+//     UniqueRequestToken: string,
+//     Reason: string = ""
+//   ) {
+//     return await MTurk.send(
+//       new SendBonusCommand({
+//         WorkerId: WorkerId,
+//         AssignmentId: AssignmentId,
+//         BonusAmount: String(Number(BonusAmount).toFixed(2)),
+//         Reason: Reason,
+//         UniqueRequestToken: UniqueRequestToken,
+//       })
+//     )
+//       .then((response) =>
+//         console.log(
+//           `Sent $${String(
+//             Number(BonusAmount).toFixed(2)
+//           )} bonus to ${WorkerId} for ${UniqueRequestToken}`
+//         )
+//       )
+//       .catch((err) => {
+//         if (!err.message.includes("has already been processed"))
+//           console.log(err.message);
+//       });
+
+//   }
