@@ -26,7 +26,7 @@ import {
 
   import config from './config.json' assert {type:"json"};
   const region =  "us-east-1";
-  const sandbox = config.sandbox; // WARNING Setting this to false could costs you money!
+  const sandbox = config.sandbox; // Setting this to false could costs you money!
   const endpoint = `https://${sandbox ? "mturk-requester-sandbox" : "mturk-requester"}.${region}.amazonaws.com`;
 
   //console.log(config.accessKeyId);
@@ -39,16 +39,20 @@ import {
     endpoint: endpoint,
   });
 
-
   export async function getAccountBalance() {
     return (await MTurk.send(new GetAccountBalanceCommand({}))).AvailableBalance;
   }
 
-  /** tested **/
+
   export async function listHITs():Promise<HIT[]>{
     return await (await MTurk.send(new ListHITsCommand({}))).HITs||[];
   }
 
+  /**
+   *
+   * @param HITId
+   * @returns {Promise<HIT>}
+   */
   export async function getHIT(HITId: string) {
     return await(await MTurk.send(
       new GetHITCommand({
@@ -57,7 +61,11 @@ import {
     )).HIT;
   }
 
-  //i think we need to add a date time string to RequesterAnnotation
+  /**
+   *
+   * @param {CreateHITCommandInput}
+   * @returns {Promise<CreateHITCommandOutput>}
+   */
   export async function createHIT(params: CreateHITCommandInput) {
     try{
     const x =  await MTurk.send(new CreateHITCommand(params));
@@ -65,7 +73,6 @@ import {
     } catch(error){
         console.log(error);
     }
-
   }
 
   //not tested
@@ -81,6 +88,13 @@ import {
     );
   }
 
+  /**
+   *
+   * @param HITId
+   * @param MaxResults
+   * @param NextToken - Optional
+   * @returns
+   */
   export async function listAssignmentsForHIT(
     HITId: string,
     MaxResults = 100,
@@ -95,8 +109,13 @@ import {
     );
   }
 
-
-
+/**
+ *
+ * @param WorkerIds
+ * @param Subject
+ * @param MessageText
+ * @returns {Promise<NotifyWorkersCommandOutput[]>}
+ */
   export async function notifyWorkers(
     WorkerIds: string[],
     Subject: string,
@@ -111,6 +130,12 @@ import {
     );
   }
 
+  /**
+   * @param {string[]} WorkerIds
+   * @param {string} Subject
+   * @param {string} MessageText
+   * @returns {Promise<NotifyWorkersCommandOutput[]>}
+   */
   export async function notifyAllWorkers(
     WorkerIds: string[],
     Subject: string,
@@ -135,8 +160,14 @@ import {
 
   /**  QUALIFICATIONS **/
 
-  /* Qualification Type Querying*/
-  //test
+/**
+ *
+ * @param query
+ * @param MustBeOwnedByCaller
+ * @param MustBeRequestable
+ * @param MaxResults
+ * @returns {Promise<QualificationType[]>}
+ */
   export async function listQualificationTypes(
     query: string,
     MustBeOwnedByCaller = true,
@@ -164,8 +195,13 @@ import {
     return response;
   }
 
-  /* Qualification Creation, Deletion, Listing */
-  //test
+
+  /**
+   * @param MustBeRequestable \
+   * @param MustBeOwnedByCaller
+   * @param MaxResults
+   * @returns {Promise<QualificationType[]>}
+   */
   export async function listAllOwnedQualificationTypes(
     MustBeRequestable: boolean,
     MustBeOwnedByCaller = true,
@@ -179,11 +215,16 @@ import {
       })
     );
 
-    console.log(result.QualificationTypes);
+    //console.log(result.QualificationTypes);
     return result.QualificationTypes;
   }
 
-  //test
+  //tested
+  /**
+    * @param {string} QualificationTypeId
+    * @param {MaxResults} MaxResults -optional
+    * @returns {Promise<{response: DeleteQualificationTypeCommandOutput, error: Error | undefined}>}
+  */
   export async function listWorkersWithQualificationType(
     QualificationTypeId: string,
     MaxResults? : 100
@@ -208,7 +249,13 @@ import {
     }
     return response;
   }
-//test
+
+
+//tested
+/**
+* @param {string} QualificationTypeId
+* @returns {Promise<{response: DeleteQualificationTypeCommandOutput, message: string}>}
+*/
   export async function createQualificationType(
     params: CreateQualificationTypeCommandInput
   ) {
@@ -218,7 +265,14 @@ import {
   }
 
   /* Qualification Interaction With Workers */
-  //test -
+  //tested
+  /**
+   * @param {string} QualificationTypeId
+    * @param {string} WorkerId
+    * @param {number} IntegerValue
+    * @param {boolean} SendNotification
+    * @returns {Promise<{response: AssociateQualificationWithWorkerCommandOutput, message: string}>}
+  */
   export async function associateQualificationWithWorker(
     QualificationTypeId: string,
     WorkerId: string,
@@ -234,14 +288,22 @@ import {
       })
     );
   }
-//test
+
+
+//tested
+/**
+* @param {string} QualificationTypeId
+* @param {string} WorkerId
+* @param {string} Reason
+* @returns {Promise<{response: DisassociateQualificationFromWorkerCommandOutput, message: string}>}
+*/
   export async function disassociateQualificationWithWorker(
     QualificationTypeId: string,
     WorkerId: string,
     Reason: string
   ) {
-    console.log(QualificationTypeId);
-    console.log(WorkerId);
+    //console.log(QualificationTypeId);
+    //console.log(WorkerId);
     return await MTurk.send(
       new DisassociateQualificationFromWorkerCommand({
         QualificationTypeId: QualificationTypeId,
@@ -250,26 +312,31 @@ import {
       })
     );
   }
-//______________________________IMPLEMENT !!!__________-
-//function
-export function getWorkerAssignments(
-    WorkerId: string
-){
-    return getLocalWorkerAssignments(WorkerId);
-}
+//__________IMPLEMENT !!!__________
+// export function getWorkerAssignments(
+//     WorkerId: string
+// ){
+//     return getLocalWorkerAssignments(WorkerId);
+// }
 
-function getLocalWorkerAssignments(
-    WorkerID:String
-){
-    return;
-}
-//worker id FIX it
+// function getLocalWorkerAssignments(
+//     WorkerID:String
+// ){
+//     return;
+// }
+
+/**
+ * @param {string} WorkerId
+ * @param {string} HITId - optional
+ * @param {string} Reason
+ * @returns {Promise<{response: ListBonusPaymentsCommandOutput, message: string}>}
+ */
   export async function ListBonusPayments(
     WorkerId: string,
     HITId: string, //optional
     Reason: string
   ) {
-    console.log(WorkerId);
+    //console.log(WorkerId);
 
     return await MTurk.send(
       new ListBonusPaymentsCommand({
@@ -293,6 +360,15 @@ function getlocalWorkerQualifications(
 
 }
 
+
+/**
+ * @param {string} WorkerId
+ * @param {string} AssignmentId
+ * @param {string | number} BonusAmount
+ * @param {string} UniqueRequestToken
+ * @param {string} Reason
+ * @returns {Promise<{response: SendBonusCommandOutput, message: string}>}
+ */
 export async function bonusWorker(
     WorkerId: string,
     AssignmentId: string,
@@ -314,37 +390,7 @@ export async function bonusWorker(
       Number(BonusAmount).toFixed(2)
     )} bonus to ${WorkerId} for ${UniqueRequestToken}`;
 
-    console.log(message);
+    //console.log(message);
     return {response, message};
   }
 
-
-//   export async function bonusWorker(
-//     WorkerId: string,
-//     AssignmentId: string,
-//     BonusAmount: string | number,
-//     UniqueRequestToken: string,
-//     Reason: string = ""
-//   ) {
-//     return await MTurk.send(
-//       new SendBonusCommand({
-//         WorkerId: WorkerId,
-//         AssignmentId: AssignmentId,
-//         BonusAmount: String(Number(BonusAmount).toFixed(2)),
-//         Reason: Reason,
-//         UniqueRequestToken: UniqueRequestToken,
-//       })
-//     )
-//       .then((response) =>
-//         console.log(
-//           `Sent $${String(
-//             Number(BonusAmount).toFixed(2)
-//           )} bonus to ${WorkerId} for ${UniqueRequestToken}`
-//         )
-//       )
-//       .catch((err) => {
-//         if (!err.message.includes("has already been processed"))
-//           console.log(err.message);
-//       });
-
-//   }
